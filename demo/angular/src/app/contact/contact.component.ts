@@ -11,7 +11,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
     </p>
     <p>
       Reach us at hello&#64;aeojs.org or visit our GitHub repository at
-      github.com/multivmlabs/aeo.js. We welcome contributions, bug reports, and feature requests.
+      github.com/rubenmarcus/aeo.js. We welcome contributions, bug reports, and feature requests.
       For enterprise inquiries, email enterprise&#64;aeojs.org.
     </p>
   `,

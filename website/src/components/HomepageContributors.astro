@@ -11,7 +11,7 @@ let contributors: GhContributor[] = [];
 
 try {
   const res = await fetch(
-    'https://api.github.com/repos/multivmlabs/aeo.js/contributors?per_page=100',
+    'https://api.github.com/repos/rubenmarcus/aeo.js/contributors?per_page=100',
     { headers: { 'User-Agent': 'aeojs-docs-build', Accept: 'application/vnd.github+json' } }
   );
   if (res.ok) {

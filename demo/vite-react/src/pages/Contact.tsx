@@ -14,11 +14,11 @@ function Contact() {
       <p>
         GitHub:{' '}
         <a
-          href="https://github.com/multivmlabs/aeo.js"
+          href="https://github.com/rubenmarcus/aeo.js"
           target="_blank"
           rel="noopener noreferrer"
         >
-          multivmlabs/aeo.js
+          rubenmarcus/aeo.js
         </a>
       </p>
     </div>

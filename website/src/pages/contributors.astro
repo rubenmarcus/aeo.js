@@ -14,7 +14,7 @@ let fetchError = false;
 
 try {
   const res = await fetch(
-    'https://api.github.com/repos/multivmlabs/aeo.js/contributors?per_page=100',
+    'https://api.github.com/repos/rubenmarcus/aeo.js/contributors?per_page=100',
     { headers: { 'User-Agent': 'aeojs-docs-build', Accept: 'application/vnd.github+json' } }
   );
   if (res.ok) {
@@ -40,7 +40,7 @@ try {
   {fetchError ? (
     <p class="contrib-fallback">
       Couldn't load contributors right now. View the full list on
-      <a href="https://github.com/multivmlabs/aeo.js/graphs/contributors" target="_blank" rel="noopener">
+      <a href="https://github.com/rubenmarcus/aeo.js/graphs/contributors" target="_blank" rel="noopener">
         GitHub
       </a>
       .
@@ -73,7 +73,7 @@ try {
       </ul>
       <p class="contrib-cta">
         Want to join them?
-        <a href="https://github.com/multivmlabs/aeo.js" target="_blank" rel="noopener">
+        <a href="https://github.com/rubenmarcus/aeo.js" target="_blank" rel="noopener">
           Open a PR
         </a>
         .

@@ -13,7 +13,7 @@ export default defineConfig({
           name: 'aeo.js',
           url: 'https://aeo-js.vercel.app',
           logo: 'https://aeo-js.vercel.app/logo.png',
-          sameAs: ['https://github.com/multivmlabs/aeo.js', 'https://x.com/aeojs'],
+          sameAs: ['https://github.com/rubenmarcus/aeo.js', 'https://x.com/aeojs'],
         },
         defaultType: 'Article',
       },

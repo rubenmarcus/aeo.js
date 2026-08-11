@@ -20,7 +20,7 @@ export default defineConfig({
 					url: 'https://aeojs.org',
 					logo: 'https://aeojs.org/og.png',
 					sameAs: [
-						'https://github.com/multivmlabs/aeo.js',
+						'https://github.com/rubenmarcus/aeo.js',
 						'https://www.npmjs.com/package/aeo.js',
 					],
 				},
