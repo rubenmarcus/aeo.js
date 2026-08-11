@@ -14,7 +14,7 @@ export const AEO_CONFIG = {
       url: SITE.url,
       logo: `${SITE.url}/logo.png`,
       sameAs: [
-        'https://github.com/multivmlabs/aeo.js',
+        'https://github.com/rubenmarcus/aeo.js',
         'https://x.com/aeojs',
       ],
     },
@@ -171,7 +171,7 @@ Since launch, 85% of our users run aeo.js on the free tier. The remaining 15% of
     title: 'Contact',
     heading: 'Contact Us',
     description: 'Get in touch with the aeo.js team for support, partnerships, or contributions.',
-    body: 'Reach us at hello@aeojs.org or visit our GitHub repository at github.com/multivmlabs/aeo.js. We welcome contributions, bug reports, and feature requests. For enterprise inquiries, email enterprise@aeojs.org.',
+    body: 'Reach us at hello@aeojs.org or visit our GitHub repository at github.com/rubenmarcus/aeo.js. We welcome contributions, bug reports, and feature requests. For enterprise inquiries, email enterprise@aeojs.org.',
   },
 } as const;
 

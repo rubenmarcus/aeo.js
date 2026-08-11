@@ -6,8 +6,8 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/aeo.js"><img src="https://img.shields.io/npm/v/aeo.js?style=flat&colorA=0d0d0d&colorB=1a1a1a" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/aeo.js"><img src="https://img.shields.io/npm/dm/aeo.js?style=flat&colorA=0d0d0d&colorB=1a1a1a" alt="npm downloads"></a>
-  <a href="https://github.com/multivmlabs/aeo.js"><img src="https://img.shields.io/github/stars/multivmlabs/aeo.js?style=flat&colorA=0d0d0d&colorB=1a1a1a" alt="GitHub stars"></a>
-  <a href="https://github.com/multivmlabs/aeo.js/blob/main/LICENSE"><img src="https://img.shields.io/github/license/multivmlabs/aeo.js?style=flat&colorA=0d0d0d&colorB=1a1a1a" alt="License"></a>
+  <a href="https://github.com/rubenmarcus/aeo.js"><img src="https://img.shields.io/github/stars/rubenmarcus/aeo.js?style=flat&colorA=0d0d0d&colorB=1a1a1a" alt="GitHub stars"></a>
+  <a href="https://github.com/rubenmarcus/aeo.js/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rubenmarcus/aeo.js?style=flat&colorA=0d0d0d&colorB=1a1a1a" alt="License"></a>
 </p>
 
 <p align="center">
@@ -356,7 +356,7 @@ If your site isn't optimized for AI engines, you're invisible to a growing share
 - [Documentation](https://aeojs.org)
 - [AEO Checker](https://check.aeojs.org)
 - [npm](https://www.npmjs.com/package/aeo.js)
-- [GitHub](https://github.com/multivmlabs/aeo.js)
+- [GitHub](https://github.com/rubenmarcus/aeo.js)
 
 ## License
 

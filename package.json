@@ -137,11 +137,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/multivmlabs/aeo.js"
+    "url": "https://github.com/rubenmarcus/aeo.js"
   },
   "homepage": "https://aeojs.org",
   "bugs": {
-    "url": "https://github.com/multivmlabs/aeo.js/issues"
+    "url": "https://github.com/rubenmarcus/aeo.js/issues"
   },
   "devDependencies": {
     "@nuxt/kit": "^3.21.1",

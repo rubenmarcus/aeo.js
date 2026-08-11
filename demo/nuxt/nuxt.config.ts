@@ -9,7 +9,7 @@ export default defineNuxtConfig({
         name: 'aeo.js',
         url: 'https://demo.aeojs.org',
         logo: 'https://demo.aeojs.org/logo.png',
-        sameAs: ['https://github.com/multivmlabs/aeo.js', 'https://x.com/aeojs'],
+        sameAs: ['https://github.com/rubenmarcus/aeo.js', 'https://x.com/aeojs'],
       },
       defaultType: 'Article',
     },

@@ -1,6 +1,6 @@
 {
   "$schema": "https://context7.com/schema/context7.json",
-  "url": "https://context7.com/multivmlabs/aeo.js",
+  "url": "https://context7.com/rubenmarcus/aeo.js",
   "public_key": "pk_LNcNy18KbBnGjRaPjB3v2",
   "projectTitle": "aeo.js",
   "description": "Answer Engine Optimization for the modern web. Make your site discoverable by AI crawlers and LLMs.",
