@@ -44,6 +44,23 @@ describe('parseArgs', () => {
     expect(flags.noWidget).toBe(false);
   });
 
+  it('does not let a boolean flag swallow the following value flag', () => {
+    const { flags, positionals } = parseArgs(['init', '--yes', '--url', 'https://x.dev']);
+    expect(flags.yes).toBe(true);
+    expect(flags.url).toBe('https://x.dev');
+    expect(positionals).toEqual([]);
+  });
+
+  it('registers a boolean flag passed as the last argument', () => {
+    const { flags } = parseArgs(['init', '--yes']);
+    expect(flags.yes).toBe(true);
+  });
+
+  it('does not treat a following flag as a value flag argument', () => {
+    const { flags } = parseArgs(['generate', '--url', '--no-widget']);
+    expect(flags.url).toBeUndefined();
+    expect(flags.noWidget).toBe(true);
+  });
   it('importing the CLI module does not run main()', () => {
     // Smoke check: if main() were running on import, the test runner would
     // exit before this assertion. Reaching this line proves the guard works.
