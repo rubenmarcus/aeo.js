@@ -35,6 +35,8 @@ export interface AeoConfig {
     disallow?: string[];
     crawlDelay?: number;
     sitemap?: string;
+    /** Content Signals policy line, e.g. 'search=yes, ai-train=no, ai-input=yes'. */
+    contentSignal?: string;
   };
   schema?: {
     enabled?: boolean;
@@ -95,6 +97,7 @@ export interface ResolvedAeoConfig {
     disallow: string[];
     crawlDelay: number;
     sitemap: string;
+    contentSignal: string | null;
   };
   schema: {
     enabled: boolean;

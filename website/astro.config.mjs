@@ -14,6 +14,9 @@ export default defineConfig({
 			// content scan at the collection root. Without this it defaults to
 			// 'src/content' and emits phantom /docs/* URLs (404s) in the sitemap.
 			contentDir: 'src/content/docs',
+			robots: {
+				contentSignal: 'search=yes, ai-train=yes, ai-input=yes',
+			},
 			schema: {
 				organization: {
 					name: 'aeo.js',

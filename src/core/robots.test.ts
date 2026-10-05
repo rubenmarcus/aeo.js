@@ -24,7 +24,7 @@ describe('generateRobotsTxt', () => {
       maxChunkLength: 2000,
       maxKeywords: 10,
     },
-    robots: { allow: ['/'], disallow: [], crawlDelay: 0, sitemap: '' },
+    robots: { allow: ['/'], disallow: [], crawlDelay: 0, sitemap: '', contentSignal: null },
     widget: {
       enabled: true,
       position: 'bottom-right',
@@ -91,6 +91,19 @@ describe('generateRobotsTxt', () => {
     expect(result).toContain('# /llms.txt')
   })
 
+
+  it('emits a Content-Signal policy line when configured', () => {
+    const result = generateRobotsTxt({
+      ...baseConfig,
+      robots: { allow: ['/'], disallow: [], crawlDelay: 0, sitemap: '', contentSignal: 'search=yes, ai-train=yes' },
+    })
+
+    expect(result).toContain('Content-Signal: search=yes, ai-train=yes')
+  })
+
+  it('omits the Content-Signal section when no policy is set', () => {
+    expect(generateRobotsTxt(baseConfig)).not.toContain('Content-Signal')
+  })
   it('should include traditional search engines', () => {
     const result = generateRobotsTxt(baseConfig)
 

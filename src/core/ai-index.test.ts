@@ -34,7 +34,7 @@ const baseConfig: ResolvedAeoConfig = {
     maxChunkLength: 2000,
     maxKeywords: 10,
   },
-  robots: { allow: ['/'], disallow: [], crawlDelay: 0, sitemap: '' },
+  robots: { allow: ['/'], disallow: [], crawlDelay: 0, sitemap: '', contentSignal: null },
   widget: {
     enabled: true,
     position: 'bottom-right',

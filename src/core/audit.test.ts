@@ -12,7 +12,7 @@ function makeConfig(overrides: Partial<ResolvedAeoConfig> = {}): ResolvedAeoConf
     contentDir: '',
     generators: { robotsTxt: true, llmsTxt: true, llmsFullTxt: true, rawMarkdown: true, manifest: true, sitemap: true, aiIndex: true, schema: true },
     aiIndex: { maxChunkLength: 2000, maxKeywords: 10 },
-    robots: { allow: ['/'], disallow: [], crawlDelay: 0, sitemap: '/sitemap.xml' },
+    robots: { allow: ['/'], disallow: [], crawlDelay: 0, sitemap: '/sitemap.xml', contentSignal: null },
     schema: {
       enabled: true,
       organization: { name: 'Test Org', url: 'https://example.com', logo: 'https://example.com/logo.png', sameAs: ['https://twitter.com/test'] },
@@ -77,9 +77,7 @@ describe('auditSite', () => {
   });
 
   it('detects blanket disallow rules', () => {
-    const config = makeConfig({
-      robots: { allow: [], disallow: ['/'], crawlDelay: 0, sitemap: '' },
-    });
+    const config = makeConfig({ robots: { allow: [], disallow: ['/'], crawlDelay: 0, sitemap: '', contentSignal: null } });
     const result = auditSite(config);
     const aiAccess = result.categories.find(c => c.name === 'AI Access')!;
     const blockCheck = aiAccess.checks.find(c => c.label.includes('blanket disallow'));

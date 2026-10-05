@@ -72,6 +72,7 @@ export function resolveConfig(config: AeoConfig = {}): ResolvedAeoConfig {
       disallow: config.robots?.disallow || [],
       crawlDelay: config.robots?.crawlDelay || 0,
       sitemap: config.robots?.sitemap || '',
+      contentSignal: config.robots?.contentSignal?.trim() || null,
     },
     schema: {
       enabled: config.schema?.enabled !== false,

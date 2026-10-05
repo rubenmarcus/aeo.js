@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.3",
-    "aeo.js": "^0.0.8",
     "astro": "^7.0.7",
     "sharp": "^0.34.2"
   }

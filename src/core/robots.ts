@@ -83,6 +83,11 @@ export function generateRobotsTxt(config: ResolvedAeoConfig): string {
   if (config.robots.crawlDelay > 0) {
     lines.push(`Crawl-delay: ${config.robots.crawlDelay}`);
   }
+  if (config.robots.contentSignal) {
+    lines.push('');
+    lines.push('# Content Signals policy (how AI systems may use this content)');
+    lines.push(`Content-Signal: ${config.robots.contentSignal}`);
+  }
   lines.push('');
 
   const sitemapUrl = config.robots.sitemap || (config.url ? `${config.url}/sitemap.xml` : '');
