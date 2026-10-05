@@ -222,6 +222,22 @@ npx aeo.js init
 npx aeo.js check
 ```
 
+`init` detects your framework, prefills `aeo.config.ts` from package.json, and with `--yes` generates everything in one command:
+
+```bash
+npx aeo.js init --url https://mysite.com --yes
+```
+
+### MCP server
+
+Let Claude Code, Cursor or any MCP client audit and fix sites conversationally:
+
+```bash
+claude mcp add aeo -- npx -y aeo.js mcp
+```
+
+Tools: `audit_url` (0-100 GEO score for any live site), `score_citability` (score draft content), `generate_aeo_files` (write the full AEO file set). See the [MCP docs](https://aeojs.org/docs/features/mcp/).
+
 ## Supported Frameworks
 
 | Framework | Import |

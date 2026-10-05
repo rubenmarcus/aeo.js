@@ -1,6 +1,6 @@
 {
   "name": "aeo.js",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Answer Engine Optimization for the modern web. Make your site discoverable by AI crawlers and LLMs.",
   "bin": {
     "aeo.js": "./dist/cli.mjs",
