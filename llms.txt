@@ -1,0 +1,53 @@
+# aeo.js
+
+> Answer Engine Optimization for the modern web. Open-source library that
+> makes sites discoverable, readable and citable by AI answer engines.
+> MIT. npm: `aeo.js`. Docs: https://aeojs.org
+
+## What it does
+
+Generates the files AI crawlers and answer engines consume, and audits any
+site for AI-readiness:
+
+- `robots.txt` with rules for 23 known AI crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, ...)
+- `llms.txt` / `llms-full.txt`
+- `sitemap.xml`, `ai-index.json` (RAG-ready chunked index), `schema.json` (JSON-LD), `docs.json`
+- Per-page raw markdown, Open Graph tags
+- 0-100 GEO readiness audit across six categories (AI Access, Agent Protocols, Schema Presence, Content Structure, Meta Quality, Citability)
+
+## Repo map
+
+- `src/core/` — library core: `audit.ts`, `citability.ts`, `schema.ts`, `llms-txt.ts`, `llms-full.ts`, `ai-index.ts`, `sitemap.ts`, `robots.ts`, `manifest.ts`, `opengraph.ts`, `platform-hints.ts`, `html-extract.ts`, `remote-crawl.ts` (live-site crawler + protocol probes), `remote-audit.ts` (live-site audit), `mcp-server.ts` (stdio JSON-RPC), `detect.ts` (framework detection)
+- `src/plugins/` — framework integrations: next, astro, vite, nuxt, sveltekit, remix, angular, docusaurus, eleventy, vitepress, tanstack-start, webpack
+- `src/cli.ts` — CLI: `generate`, `init`, `check [url]`, `report [url]`, `mcp`
+- `src/widget/` — Human/AI view-toggle widget
+- `website/` — Astro Starlight docs (aeojs.org)
+- `demo/` — per-framework example apps
+- `tests` — colocated `*.test.ts`, vitest, 327 tests
+
+## Commands
+
+```bash
+npm install
+npm test          # vitest
+npx tsc --noEmit  # typecheck
+npm run build     # tsup build to dist/
+node dist/cli.mjs check https://example.com   # live audit smoke
+```
+
+Website: `cd website && npm install && npm run build`.
+
+## CLI quick reference
+
+```bash
+npx aeo.js init --url https://example.com --yes   # scaffold config + generate
+npx aeo.js check example.com                      # audit any live site
+npx aeo.js mcp                                    # MCP server (stdio)
+```
+
+## Conventions
+
+- No SDK dependencies in core; MCP server is plain JSON-RPC.
+- Remote crawling must keep the SSRF guards (`isPrivateUrl`) and the 1 MB
+  body cap; every new fetch path goes through them.
+- Audit weights: categories sum to exactly 100 (DB constraint downstream).

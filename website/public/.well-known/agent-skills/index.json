@@ -1,0 +1,9 @@
+{
+  "skills": [
+    {
+      "name": "aeo",
+      "description": "Make a website discoverable by AI answer engines (ChatGPT, Claude, Perplexity, Gemini): llms.txt, AI-crawler robots.txt, sitemap, JSON-LD schema, ai-index.json, and 0-100 readiness audits via npx aeo.js or its MCP server.",
+      "path": "/.well-known/agent-skills/aeo/SKILL.md"
+    }
+  ]
+}
