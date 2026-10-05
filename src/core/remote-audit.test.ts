@@ -1,7 +1,28 @@
 import { describe, it, expect } from 'vitest';
 import { remoteAuditSite, buildRemoteReport, detectAeoJs, formatRemoteReport } from './remote-audit';
-import type { DiscoveryResult, CrawledPage } from './remote-crawl';
-import { AI_BOTS } from './remote-crawl';
+import type { DiscoveryResult, CrawledPage, ProtocolDiscovery } from './remote-crawl';
+ import { AI_BOTS } from './remote-crawl';
+function makeProtocols(overrides: Partial<ProtocolDiscovery> = {}): ProtocolDiscovery {
+  return {
+    linkHeaders: [],
+    markdownNegotiation: false,
+    contentSignals: null,
+    apiCatalog: false,
+    mcpCard: false,
+    agentCard: false,
+    agentSkills: false,
+    openApi: false,
+    dnsAid: false,
+    commerce: false,
+    webBotAuth: false,
+    oauthAuthorizationServer: false,
+    oauthProtectedResource: false,
+    authMd: false,
+    webmcp: false,
+    ard: false,
+    ...overrides,
+  };
+}
 
 function makeDiscovery(overrides: Partial<DiscoveryResult> = {}): DiscoveryResult {
   return {
@@ -12,6 +33,7 @@ function makeDiscovery(overrides: Partial<DiscoveryResult> = {}): DiscoveryResul
     aiIndex: { exists: false, content: null },
     homepage: null,
     botAccess: AI_BOTS.map((b) => ({ ...b, allowed: true })),
+    protocols: makeProtocols(),
     ...overrides,
   };
 }
@@ -56,14 +78,36 @@ function makePage(overrides: Partial<CrawledPage> = {}): CrawledPage {
 
 describe('remoteAuditSite', () => {
   it('scores a well-optimized site high across all categories', () => {
-    const result = remoteAuditSite(makeDiscovery(), [makePage()]);
-    expect(result.categories).toHaveLength(5);
-    for (const cat of result.categories) {
-      expect(cat.maxScore).toBe(20);
-    }
+    const result = remoteAuditSite(
+      makeDiscovery({
+        llmsFullTxt: { exists: true, contentLength: 5000 },
+        protocols: makeProtocols({
+          linkHeaders: ['</.well-known/api-catalog>; rel="api-catalog"'],
+          markdownNegotiation: true,
+          contentSignals: 'search=yes',
+          apiCatalog: true,
+          mcpCard: true,
+          agentCard: true,
+          agentSkills: true,
+          openApi: true,
+          dnsAid: true,
+          commerce: true,
+          webBotAuth: true,
+          oauthAuthorizationServer: true,
+          oauthProtectedResource: true,
+          authMd: true,
+          webmcp: true,
+          ard: true,
+        }),
+      }),
+      [makePage()]
+    );
+    expect(result.categories).toHaveLength(6);
+    expect(result.categories.reduce((s, c) => s + c.maxScore, 0)).toBe(100);
     expect(result.score).toBeGreaterThanOrEqual(90);
     expect(result.issues.length).toBeLessThanOrEqual(2);
   });
+
 
   it('scores an empty site low and reports issues with fixes', () => {
     const discovery = makeDiscovery({
@@ -86,6 +130,34 @@ describe('remoteAuditSite', () => {
     const result = remoteAuditSite(makeDiscovery({ botAccess: blockedAccess }), [makePage()]);
     const aiAccess = result.categories.find((c) => c.name === 'AI Access')!;
     expect(aiAccess.checks.find((c) => c.label.startsWith('Major AI bots'))?.passed).toBe(false);
+  });
+});
+
+describe('remoteAuditSite — Agent Protocols category', () => {
+  it('scores zero and emits fix suggestions when no protocols are published', () => {
+    const result = remoteAuditSite(makeDiscovery(), []);
+    const category = result.categories.find((c) => c.name === 'Agent Protocols')!;
+    expect(category.score).toBe(0);
+    expect(category.maxScore).toBe(30);
+    expect(category.checks).toHaveLength(17);
+    const issues = result.issues.filter((i) => i.category === 'Agent Protocols');
+    expect(issues.every((i) => typeof i.fix === 'string' && i.fix.length > 0)).toBe(true);
+  });
+
+  it('weights the high-signal protocols more than the niche ones', () => {
+    const result = remoteAuditSite(
+      makeDiscovery({
+        protocols: makeProtocols({
+          linkHeaders: ['</docs>; rel="service-doc"'],
+          markdownNegotiation: true,
+          mcpCard: true,
+        }),
+      }),
+      []
+    );
+    const category = result.categories.find((c) => c.name === 'Agent Protocols')!;
+    // 3 + 3 + 3: discovery headers, markdown negotiation and MCP card
+    expect(category.score).toBe(9);
   });
 });
 

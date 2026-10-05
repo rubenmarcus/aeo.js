@@ -32,11 +32,11 @@ function auditAiAccess(discovery: DiscoveryResult): AuditCategory {
     { label: 'robots.txt exists', passed: discovery.robotsTxt.exists, points: 3 },
     { label: 'llms.txt exists', passed: discovery.llmsTxt.exists, points: 3 },
     { label: 'sitemap.xml exists', passed: discovery.sitemap.exists, points: 3 },
-    { label: 'No blanket disallow rules blocking AI crawlers', passed: noBlanketDisallow, points: 4 },
+    { label: 'No blanket disallow rules blocking AI crawlers', passed: noBlanketDisallow, points: 3 },
     {
       label: 'Major AI bots allowed (GPTBot, ClaudeBot, Google-Extended, PerplexityBot)',
       passed: allowedMajorBots >= 3,
-      points: 4,
+      points: 3,
     },
     {
       label: `${totalAllowed}/${discovery.botAccess.length} AI crawlers can access site`,
@@ -48,7 +48,7 @@ function auditAiAccess(discovery: DiscoveryResult): AuditCategory {
   return {
     name: 'AI Access',
     score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
-    maxScore: 20,
+    maxScore: 18,
     checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
   };
 }
@@ -76,19 +76,32 @@ function auditContentStructure(pages: CrawledPage[]): AuditCategory {
     { total: 0, withAlt: 0 }
   );
   const hasGoodAltText = imgStats.total === 0 || imgStats.withAlt / imgStats.total >= 0.7;
+  // Server-rendered content: the crawler fetches raw HTML without executing
+  // JavaScript, so a near-empty homepage text means client-rendered content
+  // most AI crawlers never see.
+  const homepageWords = (pages[0]?.content ?? '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+  const isServerRendered = homepageWords >= 60;
 
   const checks = [
-    { label: 'Pages found', passed: hasPages, points: 4 },
-    { label: 'Pages with substantial content', passed: pagesWithContent.length > 0, points: 4 },
-    { label: 'Heading structure present', passed: hasHeadings, points: 4 },
-    { label: 'Well-structured paragraphs', passed: hasGoodParagraphs, points: 4 },
-    { label: 'Images have alt text (70%+)', passed: hasGoodAltText, points: 4 },
+    { label: 'Pages found', passed: hasPages, points: 2 },
+    {
+      label: 'Content server-rendered (no JS required)',
+      passed: isServerRendered,
+      points: 4,
+    },
+    { label: 'Pages with substantial content', passed: pagesWithContent.length > 0, points: 2 },
+    { label: 'Heading structure present', passed: hasHeadings, points: 2 },
+    { label: 'Well-structured paragraphs', passed: hasGoodParagraphs, points: 2 },
+    { label: 'Images have alt text (70%+)', passed: hasGoodAltText, points: 1 },
   ];
 
   return {
     name: 'Content Structure',
     score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
-    maxScore: 20,
+    maxScore: 13,
     checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
   };
 }
@@ -111,17 +124,17 @@ function auditSchemaPresence(pages: CrawledPage[]): AuditCategory {
   );
 
   const checks = [
-    { label: 'JSON-LD schema found', passed: hasSchema, points: 4 },
-    { label: 'Organization name', passed: hasOrgName, points: 4 },
-    { label: 'Organization logo', passed: hasOrgLogo, points: 4 },
-    { label: 'FAQPage or HowTo schema', passed: hasFaqOrHowTo, points: 4 },
-    { label: 'Article/WebPage schema', passed: hasArticleOrWebPage, points: 4 },
+    { label: 'JSON-LD schema found', passed: hasSchema, points: 3 },
+    { label: 'Organization name', passed: hasOrgName, points: 3 },
+    { label: 'Organization logo', passed: hasOrgLogo, points: 2 },
+    { label: 'FAQPage or HowTo schema', passed: hasFaqOrHowTo, points: 3 },
+    { label: 'Article/WebPage schema', passed: hasArticleOrWebPage, points: 2 },
   ];
 
   return {
     name: 'Schema Presence',
     score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
-    maxScore: 20,
+    maxScore: 13,
     checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
   };
 }
@@ -140,17 +153,17 @@ function auditMetaQuality(pages: CrawledPage[]): AuditCategory {
   const hasCanonical = homepage?.html ? /<link[^>]+rel=["']canonical["']/i.test(homepage.html) : false;
 
   const checks = [
-    { label: 'Title length (10-70 chars)', passed: hasGoodTitle, points: 4 },
-    { label: 'Description length (50-200 chars)', passed: hasGoodDesc, points: 4 },
-    { label: 'Open Graph tags present', passed: hasOg, points: 4 },
-    { label: '80%+ pages have titles', passed: titleCoverage, points: 4 },
-    { label: 'Canonical URL set', passed: hasCanonical, points: 4 },
+    { label: 'Title length (10-70 chars)', passed: hasGoodTitle, points: 3 },
+    { label: 'Description length (50-200 chars)', passed: hasGoodDesc, points: 3 },
+    { label: 'Open Graph tags present', passed: hasOg, points: 2 },
+    { label: '80%+ pages have titles', passed: titleCoverage, points: 2 },
+    { label: 'Canonical URL set', passed: hasCanonical, points: 3 },
   ];
 
   return {
     name: 'Meta Quality',
     score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
-    maxScore: 20,
+    maxScore: 13,
     checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
   };
 }
@@ -177,17 +190,119 @@ function auditCitability(pages: CrawledPage[]): AuditCategory {
   const totalWords = pages.reduce((sum, p) => sum + (p.content?.split(/\s+/).length ?? 0), 0);
 
   const checks = [
-    { label: 'Direct answer paragraphs', passed: hasDirectAnswers, points: 4 },
-    { label: 'Statistical data present', passed: hasStats, points: 4 },
-    { label: 'FAQ/Q&A patterns', passed: hasFaq, points: 4 },
-    { label: 'Structured lists', passed: hasLists, points: 4 },
-    { label: '500+ total words', passed: totalWords >= 500, points: 4 },
+    { label: 'Direct answer paragraphs', passed: hasDirectAnswers, points: 3 },
+    { label: 'Statistical data present', passed: hasStats, points: 2 },
+    { label: 'FAQ/Q&A patterns', passed: hasFaq, points: 3 },
+    { label: 'Structured lists', passed: hasLists, points: 2 },
+    { label: '500+ total words', passed: totalWords >= 500, points: 3 },
   ];
 
   return {
     name: 'Citability',
     score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
-    maxScore: 20,
+    maxScore: 13,
+    checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
+  };
+}
+/**
+ * The protocol surface agents use to discover, integrate and transact with a
+ * site — the checks popularized by Cloudflare's isitagentready, is-agentic
+ * and Ora that a content-only audit misses.
+ */
+function auditAgentProtocols(discovery: DiscoveryResult): AuditCategory {
+  const p = discovery.protocols;
+  const checks = [
+    {
+      label: 'Agent discovery Link headers (RFC 8288)',
+      passed: p.linkHeaders.length > 0,
+      points: 3,
+    },
+    {
+      label: 'Markdown content negotiation',
+      passed: p.markdownNegotiation,
+      points: 3,
+    },
+    {
+      label: 'MCP server card (/.well-known/mcp)',
+      passed: p.mcpCard,
+      points: 3,
+    },
+    {
+      label: 'WebMCP manifest',
+      passed: p.webmcp,
+      points: 2,
+    },
+    {
+      label: 'Web Bot Auth key directory',
+      passed: p.webBotAuth,
+      points: 2,
+    },
+    {
+      label: 'OAuth Protected Resource metadata (RFC 9728)',
+      passed: p.oauthProtectedResource,
+      points: 2,
+    },
+    {
+      label: 'ARD manifest (/.well-known/ard.json)',
+      passed: p.ard,
+      points: 2,
+    },
+    {
+      label: 'Content Signals policy in robots.txt',
+      passed: p.contentSignals !== null,
+      points: 2,
+    },
+    {
+      label: 'API Catalog (/.well-known/api-catalog)',
+      passed: p.apiCatalog,
+      points: 2,
+    },
+    {
+      label: 'A2A agent card (/.well-known/agent-card.json)',
+      passed: p.agentCard,
+      points: 2,
+    },
+    {
+      label: 'OAuth Authorization Server metadata (RFC 8414)',
+      passed: p.oauthAuthorizationServer,
+      points: 1,
+    },
+    {
+      label: 'Auth.md for agent authentication',
+      passed: p.authMd,
+      points: 1,
+    },
+    {
+      label: 'llms-full.txt published',
+      passed: discovery.llmsFullTxt.exists,
+      points: 1,
+    },
+    {
+      label: 'Agent Skills index (/.well-known/agent-skills)',
+      passed: p.agentSkills,
+      points: 1,
+    },
+    {
+      label: 'OpenAPI spec published',
+      passed: p.openApi,
+      points: 1,
+    },
+    {
+      label: 'DNS-AID records (_agents SVCB/HTTPS)',
+      passed: p.dnsAid,
+      points: 1,
+    },
+    {
+      label: 'Agentic commerce signal (x402)',
+      passed: p.commerce,
+      points: 1,
+    },
+  ];
+
+  return {
+    name: 'Agent Protocols',
+    score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
+    maxScore: 30,
     checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
   };
 }
@@ -220,6 +335,42 @@ const FIX_SUGGESTIONS: Record<string, string> = {
   'Pages with substantial content': 'Add meaningful content (50+ characters) to your pages.',
   'Heading structure present': 'Use H1-H3 headings to structure your content hierarchically.',
   'Well-structured paragraphs': 'Write paragraphs between 20-200 words for optimal AI readability.',
+  'Content server-rendered (no JS required)':
+    'Prerender or server-render your HTML. AI crawlers fetch raw HTML without executing JavaScript, so client-only content is invisible to them.',
+  'Agent discovery Link headers (RFC 8288)':
+    'Add Link response headers pointing agents to your key resources, e.g. Link: </.well-known/api-catalog>; rel="api-catalog" or </docs>; rel="service-doc".',
+  'Markdown content negotiation':
+    'Serve markdown when a client sends Accept: text/markdown. Agents get clean content without HTML parsing — on Cloudflare this is one toggle (Markdown for Agents).',
+  'MCP server card (/.well-known/mcp)':
+    'Publish /.well-known/mcp describing your MCP server so agents can discover and connect to it.',
+  'WebMCP manifest':
+    'Publish a WebMCP manifest at /.well-known/webmcp (or a link rel="webmcp" hint) describing the tools your site exposes over HTTP to AI clients.',
+  'Web Bot Auth key directory':
+    'Publish /.well-known/http-message-signatures-directory so automated traffic can prove bot identity with signed requests (Web Bot Auth).',
+  'OAuth Protected Resource metadata (RFC 9728)':
+    'Publish /.well-known/oauth-protected-resource so agents know which authorization server protects your API and which scopes they need.',
+  'ARD manifest (/.well-known/ard.json)':
+    'Publish an ARD manifest at /.well-known/ard.json listing your agentic resources (tools, skills, MCP servers) for AI discovery services.',
+  'OAuth Authorization Server metadata (RFC 8414)':
+    'Publish /.well-known/oauth-authorization-server describing your OAuth endpoints so agents can obtain tokens without hand-holding.',
+  'Auth.md for agent authentication':
+    'Publish auth.md at your site root with human-readable instructions for agents that need to authenticate against your API.',
+  'Content Signals policy in robots.txt':
+    'Declare a Content-Signal line in robots.txt (e.g. Content-Signal: ai-train=no, search=yes, ai-input=yes) to state how AI systems may use your content.',
+  'API Catalog (/.well-known/api-catalog)':
+    'Publish an RFC 9727 API catalog at /.well-known/api-catalog linking your OpenAPI specs and API documentation.',
+  'A2A agent card (/.well-known/agent-card.json)':
+    'Publish an A2A agent card at /.well-known/agent-card.json so other agents can discover your agent\'s capabilities.',
+  'llms-full.txt published':
+    'Publish llms-full.txt with your full content in markdown — agents that can\'t crawl every page still get everything.',
+  'Agent Skills index (/.well-known/agent-skills)':
+    'Publish an Agent Skills index at /.well-known/agent-skills/index.json to advertise ready-made skills for coding agents.',
+  'OpenAPI spec published':
+    'Publish your OpenAPI spec at /openapi.json — it lets agents call your API with typed, predictable requests.',
+  'DNS-AID records (_agents SVCB/HTTPS)':
+    'Publish DNS-AID records (e.g. _index._agents.yourdomain.com as SVCB/HTTPS) so agents can discover your endpoints via DNS.',
+  'Agentic commerce signal (x402)':
+    'If agents can pay for your API or content, advertise it via /.well-known/x402 so agentic commerce flows can find you.',
 };
 
 function getFixSuggestion(label: string): string | undefined {
@@ -250,12 +401,13 @@ function collectIssues(categories: AuditCategory[]): AuditIssue[] {
 
 /**
  * Audit a live site's GEO readiness from crawled data.
- * Same 5 categories / 100-point scale as auditSite(), but driven by
- * what actually ships on the site instead of local config.
+ * Six categories / 100-point scale: AI Access (18), Agent Protocols (30),
+ * Content Structure, Schema Presence, Meta Quality, Citability (13 each).
  */
 export function remoteAuditSite(discovery: DiscoveryResult, pages: CrawledPage[]): AuditResult {
   const categories = [
     auditAiAccess(discovery),
+    auditAgentProtocols(discovery),
     auditContentStructure(pages),
     auditSchemaPresence(pages),
     auditMetaQuality(pages),
