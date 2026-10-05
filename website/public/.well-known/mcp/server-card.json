@@ -1,0 +1,16 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  "version": "1.0",
+  "protocolVersion": "2025-03-26",
+  "serverInfo": {
+    "name": "aeo",
+    "title": "aeo.js AEO toolkit",
+    "version": "0.0.17"
+  },
+  "transport": {
+    "type": "stdio"
+  },
+  "description": "Audits any live site for AI answer-engine readiness (0-100 GEO score, 43 checks), scores content citability, and generates the AEO file set (llms.txt, robots.txt with AI-crawler rules, sitemap, JSON-LD, ai-index.json). Launch: npx -y aeo.js mcp",
+  "iconUrl": "https://aeojs.org/favicon.svg",
+  "documentationUrl": "https://aeojs.org/docs/features/mcp/"
+}

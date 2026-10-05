@@ -1,0 +1,5 @@
+/*
+  Link: </llms.txt>; rel="alternate"; type="text/markdown"
+  Link: </.well-known/agent-skills/index.json>; rel="agent-skills"; type="application/json"
+  Link: </.well-known/mcp/server-card.json>; rel="mcp-server-card"; type="application/json"
+  Link: </sitemap.xml>; rel="sitemap"; type="application/xml"
