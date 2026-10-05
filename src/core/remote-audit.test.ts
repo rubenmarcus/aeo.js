@@ -50,7 +50,8 @@ function makePage(overrides: Partial<CrawledPage> = {}): CrawledPage {
     <meta name="description" content="A description that is comfortably between fifty and two hundred characters long for the meta check.">
     <meta property="og:title" content="A Page">
     <link rel="canonical" href="https://a.com/">
-    <script type="application/ld+json">{"@type":"Organization","name":"Acme","logo":"https://a.com/logo.png"}</script>
+    <script type="application/ld+json">{"@type":"Organization","name":"Acme","logo":"https://a.com/logo.png","sameAs":["https://x.com/acme","https://github.com/acme"]}</script>
+    <script type="application/ld+json">{"@type":"Person","name":"Jane Author","url":"https://a.com/authors/jane"}</script>
     <script type="application/ld+json">{"@type":"WebPage","name":"Home"}</script>
     <script type="application/ld+json">{"@type":"FAQPage"}</script>
   </head><body>
@@ -67,7 +68,8 @@ function makePage(overrides: Partial<CrawledPage> = {}): CrawledPage {
     description: 'A description that is comfortably between fifty and two hundred characters long for the meta check.',
     content: RICH_CONTENT,
     jsonLd: [
-      { '@type': 'Organization', name: 'Acme', logo: 'https://a.com/logo.png' },
+      { '@type': 'Organization', name: 'Acme', logo: 'https://a.com/logo.png', sameAs: ['https://x.com/acme'] },
+      { '@type': 'Person', name: 'Jane Author', url: 'https://a.com/authors/jane' },
       { '@type': 'WebPage', name: 'Home' },
       { '@type': 'FAQPage' },
     ],

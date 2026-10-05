@@ -36,19 +36,19 @@ function auditAiAccess(discovery: DiscoveryResult): AuditCategory {
     {
       label: 'Major AI bots allowed (GPTBot, ClaudeBot, Google-Extended, PerplexityBot)',
       passed: allowedMajorBots >= 3,
-      points: 3,
+      points: 2,
     },
     {
       label: `${totalAllowed}/${discovery.botAccess.length} AI crawlers can access site`,
       passed: totalAllowed >= discovery.botAccess.length * 0.7,
-      points: 3,
+      points: 2,
     },
   ];
 
   return {
     name: 'AI Access',
     score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
-    maxScore: 18,
+    maxScore: 16,
     checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
   };
 }
@@ -112,6 +112,14 @@ function auditSchemaPresence(pages: CrawledPage[]): AuditCategory {
   const orgSchema = allJsonLd.find((s) => s['@type'] === 'Organization');
   const hasOrgName = !!(orgSchema && orgSchema.name);
   const hasOrgLogo = !!(orgSchema && orgSchema.logo);
+  // E-E-A-T signals: linked social profiles and named authors.
+  const hasSameAs = !!(
+    orgSchema &&
+    (Array.isArray(orgSchema.sameAs) ? orgSchema.sameAs.length > 0 : typeof orgSchema.sameAs === 'string')
+  );
+  const hasAuthorSchema = allJsonLd.some(
+    (s) => s['@type'] === 'Person' || (Array.isArray(s['@type']) && (s['@type'] as string[]).includes('Person'))
+  );
   const hasArticleOrWebPage = allJsonLd.some(
     (s) => s['@type'] === 'Article' || s['@type'] === 'WebPage' || s['@type'] === 'BlogPosting'
   );
@@ -125,16 +133,18 @@ function auditSchemaPresence(pages: CrawledPage[]): AuditCategory {
 
   const checks = [
     { label: 'JSON-LD schema found', passed: hasSchema, points: 3 },
-    { label: 'Organization name', passed: hasOrgName, points: 3 },
-    { label: 'Organization logo', passed: hasOrgLogo, points: 2 },
+    { label: 'Organization name', passed: hasOrgName, points: 2 },
+    { label: 'Organization logo', passed: hasOrgLogo, points: 1 },
+    { label: 'Organization sameAs profiles', passed: hasSameAs, points: 2 },
+    { label: 'Author/Person schema present', passed: hasAuthorSchema, points: 1 },
     { label: 'FAQPage or HowTo schema', passed: hasFaqOrHowTo, points: 3 },
-    { label: 'Article/WebPage schema', passed: hasArticleOrWebPage, points: 2 },
+    { label: 'Article/WebPage schema', passed: hasArticleOrWebPage, points: 3 },
   ];
 
   return {
     name: 'Schema Presence',
     score: checks.reduce((s, c) => s + (c.passed ? c.points : 0), 0),
-    maxScore: 13,
+    maxScore: 15,
     checks: checks.map((c) => ({ ...c, points: c.passed ? c.points : 0 })),
   };
 }
@@ -320,6 +330,10 @@ const FIX_SUGGESTIONS: Record<string, string> = {
   'JSON-LD schema found': 'Add JSON-LD structured data to your pages. aeo.js can inject schema automatically.',
   'Organization name': 'Add Organization schema with your company name.',
   'Organization logo': 'Add a logo URL to your Organization schema.',
+  'Organization sameAs profiles':
+    'Add a sameAs array to your Organization schema linking your social profiles (X, GitHub, LinkedIn). It consolidates your identity across the web.',
+  'Author/Person schema present':
+    'Add Person schema for content authors (name, url, sameAs) — answer engines weigh named authors as an authority signal.',
   'Article/WebPage schema': 'Add Article or WebPage schema to content pages.',
   'Title length (10-70 chars)': 'Update your page title to be between 10-70 characters.',
   'Description length (50-200 chars)': 'Add a meta description between 50-200 characters.',
@@ -401,8 +415,8 @@ function collectIssues(categories: AuditCategory[]): AuditIssue[] {
 
 /**
  * Audit a live site's GEO readiness from crawled data.
- * Six categories / 100-point scale: AI Access (18), Agent Protocols (30),
- * Content Structure, Schema Presence, Meta Quality, Citability (13 each).
+ * Six categories / 100-point scale: AI Access (16), Agent Protocols (30),
+ * Schema Presence (15), Content Structure, Meta Quality, Citability (13 each).
  */
 export function remoteAuditSite(discovery: DiscoveryResult, pages: CrawledPage[]): AuditResult {
   const categories = [
